@@ -17,6 +17,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.OpenApi.Models;
 
 namespace API
 {
@@ -53,6 +54,10 @@ namespace API
                     return new BadRequestObjectResult(errorResponse);
                 };
             });
+
+            services.AddSwaggerGen(c => {
+                c.SwaggerDoc(name: "v1", new OpenApiInfo {Title = "SkiNet API", Version = "v1"});
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -69,6 +74,10 @@ namespace API
             app.UseStaticFiles();
 
             app.UseAuthorization();
+
+            app.UseSwagger();
+            app.UseSwaggerUI(c => {c.
+                SwaggerEndpoint(url: "/swagger/v1/swagger.json", name: "SkiNet API v1");});
 
             app.UseEndpoints(endpoints =>
             {
