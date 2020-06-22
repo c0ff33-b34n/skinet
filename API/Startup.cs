@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using API.Errors;
+using API.Extensions;
 using API.Helpers;
 using API.Middleware;
 using AutoMapper;
@@ -32,32 +33,13 @@ namespace API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
             services.AddAutoMapper(typeof(MappingProfiles));
             services.AddControllers();
             services.AddDbContext<StoreContext>(x => x.UseSqlite(_config.GetConnectionString("DefaultConnection")));
 
-            services.Configure<ApiBehaviorOptions>(options => 
-            {
-                options.InvalidModelStateResponseFactory = actionContext =>
-                {
-                    var errors = actionContext.ModelState
-                        .Where(e => e.Value.Errors.Count > 0)
-                        .SelectMany(x => x.Value.Errors)
-                        .Select(x => x.ErrorMessage).ToArray();
+            services.AddApplicationServices();
+            services.AddSwaggerDocumentation();
 
-                    var errorResponse = new ValidationErrorResponse
-                    {
-                        Errors = errors
-                    };
-
-                    return new BadRequestObjectResult(errorResponse);
-                };
-            });
-
-            services.AddSwaggerGen(c => {
-                c.SwaggerDoc(name: "v1", new OpenApiInfo {Title = "SkiNet API", Version = "v1"});
-            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -75,9 +57,7 @@ namespace API
 
             app.UseAuthorization();
 
-            app.UseSwagger();
-            app.UseSwaggerUI(c => {c.
-                SwaggerEndpoint(url: "/swagger/v1/swagger.json", name: "SkiNet API v1");});
+            app.UseSwaggerDocumentation();
 
             app.UseEndpoints(endpoints =>
             {
