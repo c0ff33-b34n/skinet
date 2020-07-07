@@ -1,3 +1,20 @@
+<div class="mt-4" [formGroup]="checkoutForm">
+    <div class="row">
+        <div class="form-group col-12" formGroupName="paymentForm">
+            <app-text-input [label]="'Name on card'" formControlName="nameOnCard"></app-text-input>
+        </div>
+        <div class="form-group col-6">
+            <div #cardNumber class="form-control py-3"></div>
+        </div>
+        <div class="form-group col-3">
+            <div #cardExpiry class="form-control py-3"></div>
+        </div>
+        <div class="form-group col-3">
+            <div #cardCvc class="form-control py-3"></div>
+        </div>
+    </div>
+</div>
+
 <div class="container my-5 text-center">
     <h4>Press Submit Order to place your order!</h4>
 </div>
